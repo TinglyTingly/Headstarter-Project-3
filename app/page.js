@@ -141,6 +141,7 @@ export default function Home() {
             fullWidth
             value={message}
             onChange={(e) => setMessage(e.target.value)}
+            onKeyDown={handleKeyPress}
           />
           <Button variant="contained" onClick={sendMessage}>
             Send

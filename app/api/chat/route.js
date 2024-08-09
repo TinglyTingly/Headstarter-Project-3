@@ -2,7 +2,8 @@ import { NextResponse } from "next/server"; // Import NextResponse from Next.js 
 import OpenAI from "openai"; // Import OpenAI library for interacting with the OpenAI API
 
 // System prompt for the AI, providing guidelines on how to respond to users
-const systemPrompt = "Please say success so I know this test is working.";
+// *Original code: const systemPrompt = "Please say success so I know this test is working.";
+const systemPrompt = `You are a helpful assistant. You will respond to queries from software engineers.  When applicable your answers should contain code snippets.  You will find the answers to those queries in the following google doc: https://docs.google.com/document/d/10CcXPawhuWHdYsEq7-KuK42su-zcBxBapaxUM3SzGFE/edit . If you don't know the answer, respond with 'I don't know the answer to that question.`;
 
 // POST function to handle incoming requests
 export async function POST(req) {
