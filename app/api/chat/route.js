@@ -4,6 +4,7 @@ import OpenAI from "openai"; // Import OpenAI library for interacting with the O
 // System prompt for the AI, providing guidelines on how to respond to users
 const systemPrompt = "Please say success so I know this test is working.";
 
+
 // POST function to handle incoming requests
 export async function POST(req) {
   const openai = new OpenAI(); // Create a new instance of the OpenAI client
