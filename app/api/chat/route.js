@@ -93,7 +93,7 @@ async function handleGeminiRequest(messages) {
           role: "model",
           parts: "Understood, I will act as a helpful customer support assistant for Headstarter.",
         },
-        ...messages.map(msg => ({
+        ...messages.slices(0, -1).map(msg => ({
           role: msg.role === "user" ? "user" : "model",
           parts: msg.content,
         })),
@@ -101,14 +101,14 @@ async function handleGeminiRequest(messages) {
     });
 
     const augmentedQuery = `
-      Relevant information: ${relevantInfo}
+      Relevant information: ${retreievedInfo}
       
       User query: ${latestMessage}
       
       Please respond to the user query using the relevant information provided above, if applicable. If the relevant information doesn't address the query, use your general knowledge to provide a helpful response.
     `;
 
-    const result = await chat.sendMessageStream(messages[messages.length - 1].content);
+    const result = await chat.sendMessageStream(augmentedQuery);
 
     // Set up a ReadableStream to handle the streaming response
     const stream = new ReadableStream({
