@@ -77,7 +77,7 @@ export async function POST(req) {
 
 async function handleGeminiRequest(messages) {
   // Create a streaming completion request
-  const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
   try {
     const latestMessage = messages[messages.length - 1].content;
