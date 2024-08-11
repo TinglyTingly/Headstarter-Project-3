@@ -39,7 +39,7 @@ export default function Home() {
     {
       role: "assistant",
       content:
-        "Hi! I'm the Headstarter support assistant. How can I help you today?",
+        `Hi! I'm the Headstarter support assistant. How can I help you today?`,
     },
   ]);
   const [message, setMessage] = useState("");
@@ -56,7 +56,7 @@ export default function Home() {
           {
             role: "assistant",
             content:
-              "Hi! I'm the Headstarter support assistant. How can I help you today?",
+              `Hi! I'm the Headstarter support assistant. How can I help you today?`,
           },
         ]);
       } else {
@@ -65,7 +65,7 @@ export default function Home() {
           {
             role: "assistant",
             content:
-              "Hi! I'm the Headstarter support assistant. How can I help you today?",
+              `Hi! I'm the Headstarter support assistant. How can I help you today?`,
           },
         ]);
         setOpen(true); // Show the login dialog if the user is not logged in
@@ -157,7 +157,7 @@ export default function Home() {
         {
           role: "assistant",
           content:
-            "I'm sorry, but I encountered an error. Please try again later.",
+            `I'm sorry, but I encountered an error. Please try again later.`,
         },
       ]);
     }
@@ -357,7 +357,7 @@ export default function Home() {
           <DialogContent>
             <DialogContentText>
               To run AI customer support, please choose one of the options
-              below. Without choosing, you can't proceed.
+              below. Without choosing, you can not proceed.
             </DialogContentText>
             <Stack spacing={2} mt={2}>
               <Button variant="contained" onClick={handleLogin}>
