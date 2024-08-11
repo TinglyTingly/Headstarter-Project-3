@@ -22,7 +22,6 @@ import {
   DialogContentText,
   DialogTitle,
 } from "@mui/material";
-import { useState, useRef, useEffect } from "react";
 
 import {
   auth,
