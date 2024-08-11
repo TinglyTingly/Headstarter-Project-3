@@ -1,8 +1,79 @@
 import { NextResponse } from "next/server";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-import { HuggingFaceTransformersEmbeddigns } from "langchain/embeddings/hf_transformers";
-import { MemoryVectorStore } from "langchain/vectorstores/memory";
+// Light Weight TF-IDF Vectorizer Class
+class TdidfVectorizer {
+  constructor() {
+    this.vocabulary = new Set();
+    this.documentFrequency = {};
+    this.idfValues = {};
+    this.documents = [];
+  }
+
+  fit(documents) {
+    this.documents = documents;
+    documents.forEach((doc, docIndex) => {
+      const words = doc.toLowerCase().split(/\W+/);
+      const uniqueWords = new Set(words);
+      uniqueWords.forEach(word => {
+        this.vocabulary.add(word);
+        this.documentFrequency[word] = (this.documentFrequency[word] || 0) + 1;
+      });
+    });
+
+    this.vocabulary.forEach(word => {
+      this.idfValues[word] = Math.log(documents.length / (this.documentFrequency[word] || 1));
+    });
+  }
+
+  transform(document) {
+    const words = document.toLowerCase().split(/\W+/);
+    const vector = {};
+    words.forEach(word => {
+      if (this.vocabulary.has(word)) {
+        vector[word] = (vector[word] || 0) + 1;
+      }
+    });
+    Object.keys(vector).forEach(word => {
+      vector[word] *= this.idfValues[word];
+    });
+    return vector;
+  }
+}
+
+// Light Weight Vector Store
+class SimpleVectorStore {
+  constructor() {
+    this.vectors = [];
+    this.vectorizer = new TdidfVectorizer();
+  }
+
+  async addDocuments(documents) {
+    this.vectorizer.fit(documents);
+    this.vectors = documents.map(doc => ({
+      content: doc,
+      vector: this.vectorizer.transform(doc)
+    }));
+  }
+
+  async similaritySearch(query, k = 2) {
+    const queryVector = this.vectorizer.transform(query);
+    const scores = this.vectors.map(doc => ({
+      content: doc.content,
+      score: this.cosineSimilarity(queryVector, doc.vector)
+    }));
+    scores.sort((a, b) => b.score - a.score);
+    return scores.slice(0, k);
+  }
+
+  cosineSimilarity(vec1, vec2) {
+    const intersection = Object.keys(vec1).filter(word => vec2.hasOwnProperty(word));
+    const dotProduct = intersection.reduce((sum, word) => sum + vec1[word] * vec2[word], 0);
+    const mag1 = Math.sqrt(Object.values(vec1).reduce((sum, val) => sum + val * val, 0));
+    const mag2 = Math.sqrt(Object.values(vec2).reduce((sum, val) => sum + val * val, 0));
+    return dotProduct / (mag1 * mag2);
+  }
+}
 
 // Load environment variables
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
@@ -43,87 +114,94 @@ const knowledgeBase = [
   "Headstarter aims to create a supportive community where fellows can learn from and help each other."
 ];
 
-// embeddings model for the knowledge base
-const embeddings = new HuggingFaceTransformersEmbeddigns({
-  model: "sentence-transformers/all-MiniLM-L6-v2"
-});
-
-// intialize a mini vector store with the knowledge base
+// Initialize vector store
 let vectorStore;
 
 async function initializeVectorStore() {
-  vectorStore = await MemoryVectorStore.fromTexts(
-    knowledgeBase,
-    knowledgeBase.map((_, i) => ({id: i})),
-    embeddings
-  );
+  if (!vectorStore) {
+    console.log("Initializing vector store...");
+    vectorStore = new SimpleVectorStore();
+    await vectorStore.addDocuments(knowledgeBase);
+    console.log("Vector store initialized!");
+  }
 }
-
-// Initialize the vector store
-initializeVectorStore();
 
 // Searches the vector store for documents similar to a given query and returns the top 2 results
 async function retrieveRelevantDocuments(query) {
+  await initializeVectorStore();
   const relevantDocs = await vectorStore.similaritySearch(query, 2);
-  return relevantDocs.map(doc => doc.pageContent).join("\n");
+  return relevantDocs.map(doc => doc.content).join("\n");
 }
 
 export async function POST(req) {
-  const data = await req.json();
-  const { messages } = data;
+  try {
+    const messages = await req.json();
+    console.log("Received data:", JSON.stringify(messages, null, 2));
 
-  return handleGeminiRequest(messages);
+    // Validate the messages array
+    if (!messages){
+      throw new Error("Messages is not defined or No messages provided");
+    }
+    if (!Array.isArray(messages)) {
+      throw new Error("Messages is not an array");
+    }
+    if (messages.length === 0) {
+      throw new Error("Messages array is empty");
+    }
+    
+    return handleGeminiRequest(messages);
+  } catch (error) {
+    console.error("Error in POST:", error);
+    return new NextResponse(JSON.stringify({ error: error.message || "An error occurred" }), {
+      status: 400,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
 }
 
 async function handleGeminiRequest(messages) {
   // Create a streaming completion request
-  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+  const model = genAI.getGenerativeModel({ model: "gemini-pro" });
 
   try {
     const latestMessage = messages[messages.length - 1].content;
-    const retreievedInfo = await retrieveRelevantDocuments(latestMessage);
+    if (typeof latestMessage !== 'string') {
+      throw new Error("Latest message content is not a string");
+    }
+
+    const retrievedInfo = await retrieveRelevantDocuments(latestMessage);
     
+    // Format the chat history correctly for Gemini
+    const formattedHistory = messages.slice(0, -1).map(msg => ({
+      role: msg.role === "user" ? "user" : "model",
+      parts: [{ text: msg.content }],
+    }));
+
     const chat = model.startChat({
       history: [
-        {
-          role: "user",
-          parts: systemPrompt,
-        },
-        {
-          role: "model",
-          parts: "Understood, I will act as a helpful customer support assistant for Headstarter.",
-        },
-        ...messages.slices(0, -1).map(msg => ({
-          role: msg.role === "user" ? "user" : "model",
-          parts: msg.content,
-        })),
+        { role: "user", parts: [{ text: systemPrompt }] },
+        { role: "model", parts: [{ text: "Understood, I will act as a helpful customer support assistant for Headstarter." }] },
+        ...formattedHistory,
       ],
     });
 
     const augmentedQuery = `
-      Relevant information: ${retreievedInfo}
+      Relevant information: ${retrievedInfo}
       
       User query: ${latestMessage}
       
       Please respond to the user query using the relevant information provided above, if applicable. If the relevant information doesn't address the query, use your general knowledge to provide a helpful response.
     `;
 
-    const result = await chat.sendMessageStream(augmentedQuery);
+    const result = await chat.sendMessage(augmentedQuery);
+    const response = await result.response;
+    const text = response.text();
 
-    // Set up a ReadableStream to handle the streaming response
+    // Return the response as a stream
     const stream = new ReadableStream({
-      async start(controller) {
-        const encoder = new TextEncoder();
-        try {
-          for await (const chunk of result.stream) {
-            const chunkText = chunk.text();
-            controller.enqueue(encoder.encode(chunkText));
-          }
-        } catch (err) {
-          controller.error(err);
-        } finally {
-          controller.close();
-        }
+      start(controller) {
+        controller.enqueue(new TextEncoder().encode(text));
+        controller.close();
       },
     });
 
@@ -137,12 +215,5 @@ async function handleGeminiRequest(messages) {
   }
 }
 
-
-
-/*
-for : import { GoogleGenerativeAI } from "@google/generative-ai";
-do : npm install @google/generative-ai
-
-for : import { HuggingFaceTransformersEmbeddigns } from "langchain/embeddings/hf_transformers";  AND import { MemoryVectorStore } from "langchain/vectorstores/memory";
-do : npm install langchain @xenova/transformers
-*/
+// Note: You only need to install @google/generative-ai for this version
+// npm install @google/generative-ai
