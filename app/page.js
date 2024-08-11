@@ -187,7 +187,7 @@ export default function Home() {
         <AppBar position="static" sx={{ bgcolor: "primary.dark" }}>
           <Toolbar>
             <Typography variant="h6" sx={{ flexGrow: 1 }}>
-              AI Custumor Support
+              AI Customer Support
             </Typography>
             {user ? (
               <>
