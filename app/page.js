@@ -1,10 +1,6 @@
 "use client";
 
-
-
 import { useState, useRef, useEffect } from "react";
-
-
 
 import {
   Box,
@@ -53,13 +49,11 @@ const languages = [
   { code: "nl", label: "Dutch" },
 ];
 
-
 export default function Home() {
   const [messages, setMessages] = useState([
     {
       role: "assistant",
-      content:
-        `Hi! I'm the Headstarter support assistant. How can I help you today?`,
+      content: `Hi! I'm the Headstarter support assistant. How can I help you today?`,
     },
   ]);
   const [message, setMessage] = useState("");
@@ -75,19 +69,18 @@ export default function Home() {
 
   const appTheme = createTheme({
     palette: {
-      mode: darkMode ? 'dark' : 'light',
+      mode: darkMode ? "dark" : "light",
       background: {
-        default: darkMode ? '#121212' : '#f5f5f5',
+        default: darkMode ? "#121212" : "#f5f5f5",
       },
       primary: {
-        main: darkMode ? '#bb86fc' : '#3f51b5',
+        main: darkMode ? "#bb86fc" : "#3f51b5",
       },
       secondary: {
-        main: darkMode ? '#03dac6' : '#1e88e5',
+        main: darkMode ? "#03dac6" : "#1e88e5",
       },
     },
   });
-
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -96,8 +89,7 @@ export default function Home() {
         setMessages([
           {
             role: "assistant",
-            content:
-              `Hi! I'm the Headstarter support assistant. How can I help you today?`,
+            content: `Hi! I'm the Headstarter support assistant. How can I help you today?`,
           },
         ]);
       } else {
@@ -105,8 +97,7 @@ export default function Home() {
         setMessages([
           {
             role: "assistant",
-            content:
-              `Hi! I'm the Headstarter support assistant. How can I help you today?`,
+            content: `Hi! I'm the Headstarter support assistant. How can I help you today?`,
           },
         ]);
         setOpen(true); // Show the login dialog if the user is not logged in
@@ -198,9 +189,7 @@ export default function Home() {
         {
           role: "assistant",
 
-          content:
-            `I'm sorry, but I encountered an error. Please try again later.`,
-
+          content: `I'm sorry, but I encountered an error. Please try again later.`,
         },
       ]);
     }
@@ -236,20 +225,20 @@ export default function Home() {
 
   return (
     <ThemeProvider theme={appTheme}>
-            <Head>
-          <link
-            href="https://unpkg.com/globalseo/dist/translate.css"
-            rel="stylesheet"
-          />
-        </Head>
-        <Script
-          src="https://unpkg.com/globalseo/dist/translate.js"
-          data-globalseo-key="4f877b72-17b5-4833-8b32-7878abc392a0"
-          data-use-browser-language="true"
-          data-original-language="en"
-          data-allowed-languages="pt, fr, es, fi, it, nl"
-          data-exclude-classes=""
-        ></Script>
+      <Head>
+        <link
+          href="https://unpkg.com/globalseo/dist/translate.css"
+          rel="stylesheet"
+        />
+      </Head>
+      <Script
+        src="https://unpkg.com/globalseo/dist/translate.js"
+        data-globalseo-key="4f877b72-17b5-4833-8b32-7878abc392a0"
+        data-use-browser-language="true"
+        data-original-language="en"
+        data-allowed-languages="pt, fr, es, fi, it, nl"
+        data-exclude-classes=""
+      ></Script>
       <Box
         width="100vw"
         height="100vh"
@@ -284,11 +273,6 @@ export default function Home() {
                   onClick={handleMenu}
                   sx={{ bgcolor: "secondary.main", cursor: "pointer" }}
                 />
-
-                <Button
-                  color="inherit"
-                  onClick={handleLogout}
-                  sx={{ bgcolor: "secondary.main", marginLeft: 2 }}
                 <Menu
                   anchorEl={anchorEl}
                   open={Boolean(anchorEl)}
@@ -303,12 +287,11 @@ export default function Home() {
                   sx={{
                     bgcolor: "secondary.main",
                     marginLeft: 2,
-                    '&:hover': {
+                    "&:hover": {
                       bgcolor: "secondary.dark",
                     },
                     transition: "background-color 0.3s ease",
                   }}
-
                 >
                   Logout
                 </Button>
@@ -319,7 +302,7 @@ export default function Home() {
                 onClick={() => setOpen(true)}
                 sx={{
                   bgcolor: "secondary.main",
-                  '&:hover': {
+                  "&:hover": {
                     bgcolor: "secondary.dark",
                   },
                   transition: "background-color 0.3s ease",
@@ -337,7 +320,6 @@ export default function Home() {
           flexDirection="column"
           justifyContent="center"
           alignItems="center"
-
         >
           <div className="globalseo-select globalseo-lang-selector-wrapper globalseo-exclude">
             <details role="group">
@@ -380,18 +362,6 @@ export default function Home() {
               </summary>
             </details>
           </div>
-          <Stack
-            direction={"column"}
-            width="500px"
-            height="700px"
-            border="1px solid black"
-            p={2}
-            spacing={3}
-          sx={{
-            backgroundColor: darkMode ? '#121212' : '#f5f5f5',
-            padding: "20px",
-          }}
-        >
           {/* Language Selector */}
           <Box
             position="fixed"
@@ -508,7 +478,6 @@ export default function Home() {
                     },
                   },
                 }}
-
                 onClick={() => {
                   if (!user) {
                     setOpen(true); // Show the login dialog if the user tries to interact without logging in
@@ -520,18 +489,15 @@ export default function Home() {
                 color="primary"
                 onClick={sendMessage}
                 disabled={isLoading || !user}
-
                 onKeyDown={handleKeyPress}
-
                 sx={{
                   minWidth: "100px",
                   bgcolor: "primary.main",
-                  '&:hover': {
+                  "&:hover": {
                     bgcolor: "primary.dark",
                   },
                   transition: "background-color 0.3s ease",
                 }}
-
               >
                 Send
               </Button>
