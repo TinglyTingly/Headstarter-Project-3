@@ -1,8 +1,6 @@
 "use client";
 
-
 import { useState, useRef, useEffect } from "react";
-
 
 import {
   Box,
@@ -20,6 +18,11 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
+  useTheme,
+  useMediaQuery,
+  FormControl,
+  InputLabel,
+  Select,
 } from "@mui/material";
 
 import {
@@ -33,20 +36,51 @@ import {
 
 import Head from "next/head";
 import Script from "next/script";
+import { createTheme, ThemeProvider } from "@mui/material/styles";
+
+// Define available languages
+const languages = [
+  { code: "en", label: "English" },
+  { code: "pt", label: "Portuguese" },
+  { code: "fr", label: "French" },
+  { code: "es", label: "Spanish" },
+  { code: "fi", label: "Finnish" },
+  { code: "it", label: "Italian" },
+  { code: "nl", label: "Dutch" },
+];
 
 export default function Home() {
   const [messages, setMessages] = useState([
     {
       role: "assistant",
-      content:
-        `Hi! I'm the Headstarter support assistant. How can I help you today?`,
+      content: `Hi! I'm the Headstarter support assistant. How can I help you today?`,
     },
   ]);
   const [message, setMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [user, setUser] = useState(null);
-  const [anchorEl, setAnchorEl] = useState(null);
   const [open, setOpen] = useState(true);
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [selectedLanguage, setSelectedLanguage] = useState("en");
+  const [darkMode, setDarkMode] = useState(false); // Dark mode state
+
+  const theme = useTheme();
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
+
+  const appTheme = createTheme({
+    palette: {
+      mode: darkMode ? "dark" : "light",
+      background: {
+        default: darkMode ? "#121212" : "#f5f5f5",
+      },
+      primary: {
+        main: darkMode ? "#bb86fc" : "#3f51b5",
+      },
+      secondary: {
+        main: darkMode ? "#03dac6" : "#1e88e5",
+      },
+    },
+  });
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -55,8 +89,7 @@ export default function Home() {
         setMessages([
           {
             role: "assistant",
-            content:
-              `Hi! I'm the Headstarter support assistant. How can I help you today?`,
+            content: `Hi! I'm the Headstarter support assistant. How can I help you today?`,
           },
         ]);
       } else {
@@ -64,8 +97,7 @@ export default function Home() {
         setMessages([
           {
             role: "assistant",
-            content:
-              `Hi! I'm the Headstarter support assistant. How can I help you today?`,
+            content: `Hi! I'm the Headstarter support assistant. How can I help you today?`,
           },
         ]);
         setOpen(true); // Show the login dialog if the user is not logged in
@@ -156,8 +188,8 @@ export default function Home() {
         ...messages,
         {
           role: "assistant",
-          content:
-            `I'm sorry, but I encountered an error. Please try again later.`,
+
+          content: `I'm sorry, but I encountered an error. Please try again later.`,
         },
       ]);
     }
@@ -181,14 +213,55 @@ export default function Home() {
     scrollToBottom();
   }, [messages]);
 
+  const handleLanguageChange = (event) => {
+    const newLanguage = event.target.value;
+    setSelectedLanguage(newLanguage);
+
+    // Update the global translation API or change language setting
+    if (window.globalseo) {
+      window.globalseo.setLanguage(newLanguage);
+    }
+  };
+
   return (
-    <>
-      <Box width="100vw" height="100vh" display="flex" flexDirection="column">
-        <AppBar position="static" sx={{ bgcolor: "primary.dark" }}>
+    <ThemeProvider theme={appTheme}>
+      <Head>
+        <link
+          href="https://unpkg.com/globalseo/dist/translate.css"
+          rel="stylesheet"
+        />
+      </Head>
+      <Script
+        src="https://unpkg.com/globalseo/dist/translate.js"
+        data-globalseo-key="4f877b72-17b5-4833-8b32-7878abc392a0"
+        data-use-browser-language="true"
+        data-original-language="en"
+        data-allowed-languages="pt, fr, es, fi, it, nl"
+        data-exclude-classes=""
+      ></Script>
+      <Box
+        width="100vw"
+        height="100vh"
+        display="flex"
+        flexDirection="column"
+        bgcolor={appTheme.palette.background.default}
+      >
+        <AppBar
+          position="static"
+          sx={{
+            bgcolor: darkMode ? "#333" : "#3f51b5",
+            height: "64px",
+            boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.1)",
+          }}
+        >
           <Toolbar>
             <Typography variant="h6" sx={{ flexGrow: 1 }}>
               AI Headstarter Assistant
             </Typography>
+            <Button onClick={() => setDarkMode(!darkMode)} color="inherit">
+              {darkMode ? "Light Mode" : "Dark Mode"}
+            </Button>
+
             {user ? (
               <>
                 <Typography variant="body1" sx={{ marginRight: 2 }}>
@@ -200,10 +273,25 @@ export default function Home() {
                   onClick={handleMenu}
                   sx={{ bgcolor: "secondary.main", cursor: "pointer" }}
                 />
+                <Menu
+                  anchorEl={anchorEl}
+                  open={Boolean(anchorEl)}
+                  onClose={handleClose}
+                  sx={{ mt: "45px" }}
+                >
+                  <MenuItem onClick={handleLogout}>Logout</MenuItem>
+                </Menu>
                 <Button
                   color="inherit"
                   onClick={handleLogout}
-                  sx={{ bgcolor: "secondary.main", marginLeft: 2 }}
+                  sx={{
+                    bgcolor: "secondary.main",
+                    marginLeft: 2,
+                    "&:hover": {
+                      bgcolor: "secondary.dark",
+                    },
+                    transition: "background-color 0.3s ease",
+                  }}
                 >
                   Logout
                 </Button>
@@ -212,28 +300,19 @@ export default function Home() {
               <Button
                 color="inherit"
                 onClick={() => setOpen(true)}
-                sx={{ bgcolor: "secondary.main" }}
+                sx={{
+                  bgcolor: "secondary.main",
+                  "&:hover": {
+                    bgcolor: "secondary.dark",
+                  },
+                  transition: "background-color 0.3s ease",
+                }}
               >
                 Login
               </Button>
             )}
           </Toolbar>
         </AppBar>
-        <Head>
-          <link
-            href="https://unpkg.com/globalseo/dist/translate.css"
-            rel="stylesheet"
-          />
-        </Head>
-        <Script
-          src="https://unpkg.com/globalseo/dist/translate.js"
-          data-globalseo-key="4f877b72-17b5-4833-8b32-7878abc392a0"
-          data-use-browser-language="true"
-          data-original-language="en"
-          data-allowed-languages="pt, fr, es, fi, it, nl"
-          data-exclude-classes=""
-        ></Script>
-
         <Box
           width="100vw"
           height="100vh"
@@ -283,13 +362,45 @@ export default function Home() {
               </summary>
             </details>
           </div>
+          {/* Language Selector */}
+          <Box
+            position="fixed"
+            top={10}
+            left="50%"
+            transform="translateX(-50%)"
+            bgcolor="background.paper"
+            p={2}
+            borderRadius={1}
+            boxShadow={1}
+            zIndex={1000} // Ensure it appears above other elements
+          >
+            <FormControl variant="outlined" fullWidth>
+              <InputLabel htmlFor="language-selector">Language</InputLabel>
+              <Select
+                value={selectedLanguage}
+                onChange={handleLanguageChange}
+                label="Language"
+                inputProps={{ id: "language-selector" }}
+              >
+                {languages.map((lang) => (
+                  <MenuItem key={lang.code} value={lang.code}>
+                    {lang.label}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Box>
+
           <Stack
             direction={"column"}
-            width="500px"
+            width={isSmallScreen ? "90%" : "500px"}
             height="700px"
-            border="1px solid black"
-            p={2}
+            p={3}
             spacing={3}
+            bgcolor="white"
+            borderRadius={4}
+            boxShadow="0px 4px 20px rgba(0, 0, 0, 0.1)"
+            overflow="hidden"
           >
             <Stack
               direction={"column"}
@@ -297,6 +408,15 @@ export default function Home() {
               flexGrow={1}
               overflow="auto"
               maxHeight="100%"
+              sx={{
+                "&::-webkit-scrollbar": {
+                  width: "8px",
+                },
+                "&::-webkit-scrollbar-thumb": {
+                  backgroundColor: "#ccc",
+                  borderRadius: "8px",
+                },
+              }}
             >
               {messages.map((message, index) => (
                 <Box
@@ -315,6 +435,17 @@ export default function Home() {
                     color="white"
                     borderRadius={16}
                     p={3}
+                    sx={{
+                      bgcolor:
+                        message.role === "assistant"
+                          ? "primary.main"
+                          : "secondary.main",
+                      color: "white",
+                      borderRadius: 2,
+                      p: 2,
+                      maxWidth: "80%",
+                      wordBreak: "break-word",
+                    }}
                   >
                     {message.content}
                   </Box>
@@ -333,6 +464,20 @@ export default function Home() {
                 rows={2}
                 variant="outlined"
                 disabled={!user} // Disable input until the user is logged in
+                sx={{
+                  borderRadius: 2,
+                  "& .MuiOutlinedInput-root": {
+                    "& fieldset": {
+                      borderColor: "#ccc",
+                    },
+                    "&:hover fieldset": {
+                      borderColor: "primary.main",
+                    },
+                    "&.Mui-focused fieldset": {
+                      borderColor: "primary.main",
+                    },
+                  },
+                }}
                 onClick={() => {
                   if (!user) {
                     setOpen(true); // Show the login dialog if the user tries to interact without logging in
@@ -345,19 +490,35 @@ export default function Home() {
                 onClick={sendMessage}
                 disabled={isLoading || !user}
                 onKeyDown={handleKeyPress}
+                sx={{
+                  minWidth: "100px",
+                  bgcolor: "primary.main",
+                  "&:hover": {
+                    bgcolor: "primary.dark",
+                  },
+                  transition: "background-color 0.3s ease",
+                }}
               >
                 Send
               </Button>
             </Stack>
           </Stack>
         </Box>
-
-        <Dialog open={open} onClose={() => setOpen(false)}>
-          <DialogTitle>Login</DialogTitle>
+        <Dialog
+          open={open}
+          onClose={() => setOpen(false)}
+          sx={{
+            "& .MuiPaper-root": {
+              borderRadius: 3,
+              padding: "20px",
+            },
+          }}
+        >
+          <DialogTitle sx={{ textAlign: "center" }}>Login</DialogTitle>
           <DialogContent>
-            <DialogContentText>
+            <DialogContentText sx={{ textAlign: "center", mb: 2 }}>
               To run AI customer support, please choose one of the options
-              below. Without choosing, you can not proceed.
+              below. Without choosing, you cannot proceed.
             </DialogContentText>
             <Stack spacing={2} mt={2}>
               <Button variant="contained" onClick={handleLogin}>
@@ -369,10 +530,12 @@ export default function Home() {
             </Stack>
           </DialogContent>
           <DialogActions>
-            <Button onClick={() => setOpen(false)}>Cancel</Button>
+            <Button onClick={() => setOpen(false)} color="primary">
+              Cancel
+            </Button>
           </DialogActions>
         </Dialog>
       </Box>
-    </>
+    </ThemeProvider>
   );
 }
