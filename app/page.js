@@ -58,12 +58,8 @@ export default function Home() {
   const [messages, setMessages] = useState([
     {
       role: "assistant",
-
       content:
         `Hi! I'm the Headstarter support assistant. How can I help you today?`,
-
-      content: `Hi! I'm the Headstarter support assistant. How can I help you today?`,
-
     },
   ]);
   const [message, setMessage] = useState("");
@@ -100,12 +96,8 @@ export default function Home() {
         setMessages([
           {
             role: "assistant",
-
             content:
               `Hi! I'm the Headstarter support assistant. How can I help you today?`,
-
-            content: `Hi! I'm the Headstarter support assistant. How can I help you today?`,
-
           },
         ]);
       } else {
@@ -113,12 +105,8 @@ export default function Home() {
         setMessages([
           {
             role: "assistant",
-
             content:
               `Hi! I'm the Headstarter support assistant. How can I help you today?`,
-
-            content: `Hi! I'm the Headstarter support assistant. How can I help you today?`,
-
           },
         ]);
         setOpen(true); // Show the login dialog if the user is not logged in
@@ -342,16 +330,9 @@ export default function Home() {
             )}
           </Toolbar>
         </AppBar>
-
-
-
         <Box
-
           width="100vw"
           height="100vh"
-
-          width="100%"
-
           display="flex"
           flexDirection="column"
           justifyContent="center"
