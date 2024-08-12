@@ -1,13 +1,11 @@
 "use client";
 
-<<<<<<< Updated upstream
+
 
 import { useState, useRef, useEffect } from "react";
 
 
-=======
-import { useState, useRef, useEffect } from "react";
->>>>>>> Stashed changes
+
 import {
   Box,
   Button,
@@ -24,17 +22,13 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
-<<<<<<< Updated upstream
-} from "@mui/material";
-
-=======
   useTheme,
   useMediaQuery,
   FormControl,
   InputLabel,
   Select,
 } from "@mui/material";
->>>>>>> Stashed changes
+
 import {
   auth,
   GoogleAuthProvider,
@@ -42,18 +36,12 @@ import {
   signOut,
   onAuthStateChanged,
   signInAnonymously,
-<<<<<<< Updated upstream
 } from "../firebase";
 
-=======
-} from "../firebase.js";
->>>>>>> Stashed changes
 import Head from "next/head";
 import Script from "next/script";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 
-<<<<<<< Updated upstream
-=======
 // Define available languages
 const languages = [
   { code: "en", label: "English" },
@@ -65,26 +53,22 @@ const languages = [
   { code: "nl", label: "Dutch" },
 ];
 
->>>>>>> Stashed changes
+
 export default function Home() {
   const [messages, setMessages] = useState([
     {
       role: "assistant",
-<<<<<<< Updated upstream
+
       content:
         `Hi! I'm the Headstarter support assistant. How can I help you today?`,
-=======
+
       content: `Hi! I'm the Headstarter support assistant. How can I help you today?`,
->>>>>>> Stashed changes
+
     },
   ]);
   const [message, setMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [user, setUser] = useState(null);
-<<<<<<< Updated upstream
-  const [anchorEl, setAnchorEl] = useState(null);
-  const [open, setOpen] = useState(true);
-=======
   const [open, setOpen] = useState(true);
   const [anchorEl, setAnchorEl] = useState(null);
   const [selectedLanguage, setSelectedLanguage] = useState("en");
@@ -107,7 +91,7 @@ export default function Home() {
       },
     },
   });
->>>>>>> Stashed changes
+
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -116,12 +100,12 @@ export default function Home() {
         setMessages([
           {
             role: "assistant",
-<<<<<<< Updated upstream
+
             content:
               `Hi! I'm the Headstarter support assistant. How can I help you today?`,
-=======
+
             content: `Hi! I'm the Headstarter support assistant. How can I help you today?`,
->>>>>>> Stashed changes
+
           },
         ]);
       } else {
@@ -129,12 +113,12 @@ export default function Home() {
         setMessages([
           {
             role: "assistant",
-<<<<<<< Updated upstream
+
             content:
               `Hi! I'm the Headstarter support assistant. How can I help you today?`,
-=======
+
             content: `Hi! I'm the Headstarter support assistant. How can I help you today?`,
->>>>>>> Stashed changes
+
           },
         ]);
         setOpen(true); // Show the login dialog if the user is not logged in
@@ -225,12 +209,10 @@ export default function Home() {
         ...messages,
         {
           role: "assistant",
-<<<<<<< Updated upstream
+
           content:
             `I'm sorry, but I encountered an error. Please try again later.`,
-=======
-          content: `I'm sorry, but I encountered an error. Please try again later.`,
->>>>>>> Stashed changes
+
         },
       ]);
     }
@@ -254,16 +236,6 @@ export default function Home() {
     scrollToBottom();
   }, [messages]);
 
-<<<<<<< Updated upstream
-  return (
-    <>
-      <Box width="100vw" height="100vh" display="flex" flexDirection="column">
-        <AppBar position="static" sx={{ bgcolor: "primary.dark" }}>
-          <Toolbar>
-            <Typography variant="h6" sx={{ flexGrow: 1 }}>
-              AI Customer Support
-            </Typography>
-=======
   const handleLanguageChange = (event) => {
     const newLanguage = event.target.value;
     setSelectedLanguage(newLanguage);
@@ -276,6 +248,20 @@ export default function Home() {
 
   return (
     <ThemeProvider theme={appTheme}>
+            <Head>
+          <link
+            href="https://unpkg.com/globalseo/dist/translate.css"
+            rel="stylesheet"
+          />
+        </Head>
+        <Script
+          src="https://unpkg.com/globalseo/dist/translate.js"
+          data-globalseo-key="4f877b72-17b5-4833-8b32-7878abc392a0"
+          data-use-browser-language="true"
+          data-original-language="en"
+          data-allowed-languages="pt, fr, es, fi, it, nl"
+          data-exclude-classes=""
+        ></Script>
       <Box
         width="100vw"
         height="100vh"
@@ -298,7 +284,7 @@ export default function Home() {
             <Button onClick={() => setDarkMode(!darkMode)} color="inherit">
               {darkMode ? "Light Mode" : "Dark Mode"}
             </Button>
->>>>>>> Stashed changes
+
             {user ? (
               <>
                 <Typography variant="body1" sx={{ marginRight: 2 }}>
@@ -310,12 +296,11 @@ export default function Home() {
                   onClick={handleMenu}
                   sx={{ bgcolor: "secondary.main", cursor: "pointer" }}
                 />
-<<<<<<< Updated upstream
+
                 <Button
                   color="inherit"
                   onClick={handleLogout}
                   sx={{ bgcolor: "secondary.main", marginLeft: 2 }}
-=======
                 <Menu
                   anchorEl={anchorEl}
                   open={Boolean(anchorEl)}
@@ -335,7 +320,7 @@ export default function Home() {
                     },
                     transition: "background-color 0.3s ease",
                   }}
->>>>>>> Stashed changes
+
                 >
                   Logout
                 </Button>
@@ -344,9 +329,6 @@ export default function Home() {
               <Button
                 color="inherit"
                 onClick={() => setOpen(true)}
-<<<<<<< Updated upstream
-                sx={{ bgcolor: "secondary.main" }}
-=======
                 sx={{
                   bgcolor: "secondary.main",
                   '&:hover': {
@@ -354,44 +336,27 @@ export default function Home() {
                   },
                   transition: "background-color 0.3s ease",
                 }}
->>>>>>> Stashed changes
               >
                 Login
               </Button>
             )}
           </Toolbar>
         </AppBar>
-<<<<<<< Updated upstream
-=======
 
->>>>>>> Stashed changes
-        <Head>
-          <link
-            href="https://unpkg.com/globalseo/dist/translate.css"
-            rel="stylesheet"
-          />
-        </Head>
-        <Script
-          src="https://unpkg.com/globalseo/dist/translate.js"
-          data-globalseo-key="4f877b72-17b5-4833-8b32-7878abc392a0"
-          data-use-browser-language="true"
-          data-original-language="en"
-          data-allowed-languages="pt, fr, es, fi, it, nl"
-          data-exclude-classes=""
-        ></Script>
+
 
         <Box
-<<<<<<< Updated upstream
+
           width="100vw"
           height="100vh"
-=======
+
           width="100%"
->>>>>>> Stashed changes
+
           display="flex"
           flexDirection="column"
           justifyContent="center"
           alignItems="center"
-<<<<<<< Updated upstream
+
         >
           <div className="globalseo-select globalseo-lang-selector-wrapper globalseo-exclude">
             <details role="group">
@@ -441,7 +406,6 @@ export default function Home() {
             border="1px solid black"
             p={2}
             spacing={3}
-=======
           sx={{
             backgroundColor: darkMode ? '#121212' : '#f5f5f5',
             padding: "20px",
@@ -486,16 +450,13 @@ export default function Home() {
             borderRadius={4}
             boxShadow="0px 4px 20px rgba(0, 0, 0, 0.1)"
             overflow="hidden"
->>>>>>> Stashed changes
           >
             <Stack
               direction={"column"}
               spacing={2}
               flexGrow={1}
               overflow="auto"
-<<<<<<< Updated upstream
               maxHeight="100%"
-=======
               sx={{
                 "&::-webkit-scrollbar": {
                   width: "8px",
@@ -505,7 +466,6 @@ export default function Home() {
                   borderRadius: "8px",
                 },
               }}
->>>>>>> Stashed changes
             >
               {messages.map((message, index) => (
                 <Box
@@ -516,7 +476,6 @@ export default function Home() {
                   }
                 >
                   <Box
-<<<<<<< Updated upstream
                     bgcolor={
                       message.role === "assistant"
                         ? "primary.main"
@@ -525,7 +484,6 @@ export default function Home() {
                     color="white"
                     borderRadius={16}
                     p={3}
-=======
                     sx={{
                       bgcolor:
                         message.role === "assistant"
@@ -537,7 +495,6 @@ export default function Home() {
                       maxWidth: "80%",
                       wordBreak: "break-word",
                     }}
->>>>>>> Stashed changes
                   >
                     {message.content}
                   </Box>
@@ -555,10 +512,7 @@ export default function Home() {
                 multiline
                 rows={2}
                 variant="outlined"
-<<<<<<< Updated upstream
                 disabled={!user} // Disable input until the user is logged in
-=======
-                disabled={!user}
                 sx={{
                   borderRadius: 2,
                   "& .MuiOutlinedInput-root": {
@@ -573,7 +527,7 @@ export default function Home() {
                     },
                   },
                 }}
->>>>>>> Stashed changes
+
                 onClick={() => {
                   if (!user) {
                     setOpen(true); // Show the login dialog if the user tries to interact without logging in
@@ -585,9 +539,9 @@ export default function Home() {
                 color="primary"
                 onClick={sendMessage}
                 disabled={isLoading || !user}
-<<<<<<< Updated upstream
+
                 onKeyDown={handleKeyPress}
-=======
+
                 sx={{
                   minWidth: "100px",
                   bgcolor: "primary.main",
@@ -596,22 +550,13 @@ export default function Home() {
                   },
                   transition: "background-color 0.3s ease",
                 }}
->>>>>>> Stashed changes
+
               >
                 Send
               </Button>
             </Stack>
           </Stack>
         </Box>
-
-<<<<<<< Updated upstream
-        <Dialog open={open} onClose={() => setOpen(false)}>
-          <DialogTitle>Login</DialogTitle>
-          <DialogContent>
-            <DialogContentText>
-              To run AI customer support, please choose one of the options
-              below. Without choosing, you can not proceed.
-=======
         <Dialog
           open={open}
           onClose={() => setOpen(false)}
@@ -627,7 +572,6 @@ export default function Home() {
             <DialogContentText sx={{ textAlign: "center", mb: 2 }}>
               To run AI customer support, please choose one of the options
               below. Without choosing, you cannot proceed.
->>>>>>> Stashed changes
             </DialogContentText>
             <Stack spacing={2} mt={2}>
               <Button variant="contained" onClick={handleLogin}>
@@ -639,13 +583,9 @@ export default function Home() {
             </Stack>
           </DialogContent>
           <DialogActions>
-<<<<<<< Updated upstream
-            <Button onClick={() => setOpen(false)}>Cancel</Button>
-=======
             <Button onClick={() => setOpen(false)} color="primary">
               Cancel
             </Button>
->>>>>>> Stashed changes
           </DialogActions>
         </Dialog>
       </Box>
